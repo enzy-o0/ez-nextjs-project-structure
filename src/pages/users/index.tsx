@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import type { KeyboardEvent } from 'react';
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
@@ -32,7 +33,7 @@ export const selectOptionAge: SelectOptionType[] = Array.from(Array(10), (_, i) 
   };
 });
 
-interface IUserProps {
+type TUserProps = {
   idx: number;
   id: string;
   phone: string;
@@ -40,7 +41,7 @@ interface IUserProps {
   addr: string;
   gender: string;
   birth: string;
-}
+};
 
 export const getServerSideProps: GetServerSideProps = async () => {
   // const { data } = await client.query({
@@ -60,7 +61,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
     },
   ];
 
-  const users = data.users.map((e) => {
+  const users = data.users.map((e: any) => {
     return {
       ...e,
       phone: e.phone ? e.phone.replace(/(\d{3})(\d{3,4})(\d{4})/, '$1-$2-$3') : '',
@@ -74,13 +75,18 @@ export const getServerSideProps: GetServerSideProps = async () => {
   };
 };
 
-const Users = (props: { users: IUserProps[] }) => {
+type PageQuery = {
+  curPage?: number;
+  schType?: number;
+  schKeyword?: string;
+};
+
+const Users = (props: { users: TUserProps[] }) => {
   const userTableHeader = {
     idx: '글번호',
     id: '아이디',
     phone: '전화번호',
     name: '이름',
-    addr: '주소',
     gender: '성별',
     birth: '생일',
   };
@@ -92,25 +98,26 @@ const Users = (props: { users: IUserProps[] }) => {
   // 검색어 값 (query 'keyword')
   const [searchKeyword, setSearchKeyword] = useState<string>('');
   // 검색어 셀렉트 (query 'type')
-  const [searchType, setSearchType] = useState<number>(0);
+  const [searchType, setSearchType] = useState<string>('0');
 
   // 선택된 필터 (나이, 성별, 유료 여부)
   const [usersFilteredGender, setUsersFilteredGender] = useState([]);
   const [usersFilteredAge, setUsersFilteredAge] = useState([]);
   const [usersFiltered, setUsersFiltered] = useState<object[]>([]);
 
-  const { curPage, schKeyword, schType } = router.query;
+  const { curPage, schType, schKeyword } = router.query as PageQuery;
 
   // query 'keyword', 'type'가 있을 시, 타는 함수
   // 뒤로가기 or url 새로고침
   const initFilteredSearchUsers = () => {
-    setSearchType(schType);
-    setSearchKeyword(schKeyword);
-    setUserData(onFilterdSearchUsers(schType, schKeyword, true));
+    if (schKeyword) {
+      setSearchKeyword(schKeyword);
+      setUserData(onFilterdSearchUsers(undefined, schKeyword, true));
+    }
   };
 
   useEffect(() => {
-    router.isReady && schType && schKeyword && initFilteredSearchUsers();
+    router.isReady && schKeyword && initFilteredSearchUsers();
   }, []);
 
   useDidMountEffect(() => {
@@ -136,7 +143,7 @@ const Users = (props: { users: IUserProps[] }) => {
   };
 
   // 엔터하면 검색
-  const onKeyPress = (e) => {
+  const onKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key == 'Enter') {
       onClickSearch();
     }
@@ -155,28 +162,27 @@ const Users = (props: { users: IUserProps[] }) => {
         users = usersFiltered;
         type = Number(searchType);
         keyword = searchKeyword;
-        router.replace(`users?curPage=1&schType=${type}&schKeyword=${keyword}`);
       } else {
         // 필터가 없을 경우, init 데이터를 users에 재할당
         users = props.users;
         type = Number(searchType);
         keyword = searchKeyword;
-        router.replace(`users?curPage=1&schType=${type}&schKeyword=${keyword}`);
       }
     } else {
       users = props.users;
       type = Number(schType);
-      keyword = schKeyword;
-      router.replace(`users?curPage=1&schType=${type}&schKeyword=${keyword}`);
+      keyword = schKeyword!;
     }
 
+    router.replace(`users?curPage=1&schType=${type}&schKeyword=${keyword}`);
+
     const filteredData = users
-      ? users.filter((e: IUserProps) => {
-          if (type === 0 && e.name.includes(keyword)) {
-            return e;
-          } else if (type === 1 && e.phone.includes(keyword)) {
-            return e;
-          } else if (type === 2 && e.addr.includes(keyword)) {
+      ? users.filter((e: any) => {
+          if (
+            (type === 0 && e.name.includes(keyword)) ||
+            (type === 1 && e.phone.includes(keyword)) ||
+            (type === 2 && e.addr.includes(keyword))
+          ) {
             return e;
           } else {
             return false;
@@ -195,17 +201,17 @@ const Users = (props: { users: IUserProps[] }) => {
   const onFilteredUsers = () => {
     let filteredData: object[] = [];
 
-    if (searchKeyword) {
+    if (searchKeyword && schType) {
       // 서치 키워드가 있으면, 서치 이후 결과값을 필터
-      filteredData = onFilterdSearchUsers(schType, schKeyword, true);
+      filteredData = onFilterdSearchUsers(schType, searchKeyword, true);
     } else {
       // 없으면, init 데이터를 필터한다.
       filteredData = props.users;
     }
 
     if (usersFilteredGender.length) {
-      filteredData = filteredData.filter((user) => {
-        const filteredGender = usersFilteredGender.some((e) => {
+      filteredData = filteredData.filter((user: any) => {
+        const filteredGender = usersFilteredGender.some((e: any) => {
           return user.gender === e.label;
         });
 
@@ -214,8 +220,8 @@ const Users = (props: { users: IUserProps[] }) => {
     }
 
     if (usersFilteredAge.length) {
-      filteredData = filteredData.filter((user) => {
-        const filteredAge = usersFilteredAge.some((e) => {
+      filteredData = filteredData.filter((user: any) => {
+        const filteredAge = usersFilteredAge.some((e: any) => {
           return String(user.age).startsWith(e.value);
         });
 
@@ -237,7 +243,7 @@ const Users = (props: { users: IUserProps[] }) => {
               isMulti
               multiple
               placeholder="성별 필터"
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              onChange={(e: React.SetStateAction<never[]>) => {
                 setUsersFilteredGender(e);
               }}
             />
@@ -246,7 +252,7 @@ const Users = (props: { users: IUserProps[] }) => {
               isMulti
               multiple
               placeholder="나이 필터"
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              onChange={(e: React.SetStateAction<never[]>) => {
                 setUsersFilteredAge(e);
               }}
             />

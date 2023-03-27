@@ -28,7 +28,7 @@ const Table = ({ data, header, currentPage }: TableProp) => {
                     className="table-border"
                     key={`tr${idx}`}
                     onClick={() => {
-                      router.push(`${asPath[0]}/${obj.seq}`);
+                      router.push(`${asPath[0]}/1`);
                     }}
                   >
                     <TableTd data={obj} head={Object.keys(header)} index={idx} currentPage={currentPage} />
@@ -37,7 +37,7 @@ const Table = ({ data, header, currentPage }: TableProp) => {
               })}
             </>
           ) : (
-            <NoDataMessage colSpan={headerLength}>데이터가 없습니다.</NoDataMessage>
+            <NoDataMessage colSpan={headerLength}>데이터가 없습니다</NoDataMessage>
           )}
         </tbody>
       </TableWrapper>

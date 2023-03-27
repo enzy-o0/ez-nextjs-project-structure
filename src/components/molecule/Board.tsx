@@ -7,7 +7,7 @@ import Pagination from '../atom/Pagination';
 interface IProps {
   data: object[];
   tableHeader: {};
-  curPage: number;
+  curPage?: number;
 }
 
 const Board = ({ tableHeader, data, curPage }: IProps) => {

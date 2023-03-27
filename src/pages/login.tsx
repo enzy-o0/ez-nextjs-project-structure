@@ -11,14 +11,12 @@ export default function Login() {
     e.preventDefault();
     const id = e.target.id.value;
     const password = e.target.password.value;
-    const response = await signIn('ADMIN', {
-      id,
-      password,
-      redirect: true,
-      callbackUrl: 'http://localhost:3000/',
-    });
-
-    console.log(response);
+    // const response = await signIn('ADMIN', {
+    //   id,
+    //   password,
+    //   redirect: true,
+    //   callbackUrl: 'http://localhost:3000/',
+    // });
   };
 
   if (status === 'authenticated') {
@@ -39,7 +37,7 @@ export default function Login() {
 
   const { id, password } = loginAdmin;
 
-  const onChange = (e) => {
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
     setLoginAdmin({

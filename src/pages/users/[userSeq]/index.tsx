@@ -4,12 +4,11 @@ import { Button } from '@paljs/ui/Button';
 import { SelectOptionType } from '@src/types';
 import { useRouter } from 'next/router';
 import UserDetail from '@src/components/organism/users/userDetail/UserDetail';
-import UserFarmland from '@src/components/organism/users/userDetail/UserFarmland';
 import Breadcrumb from '@src/components/atom/Breadcrumb';
-import { GET_FARMLAND } from '@src/pages/api/query/farmland';
+// import { GET_FARMLAND } from '@src/pages/api/query/farmland';
 import { GET_USER, UPDATE_USER } from '@src/pages/api/query/user';
 import styled from 'styled-components';
-import client from '@src/pages/apolloClient';
+// import client from '@src/pages/apolloClient';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 
 export const SelectOptionGenderType: SelectOptionType[] = [
@@ -18,23 +17,26 @@ export const SelectOptionGenderType: SelectOptionType[] = [
 ];
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const { userSeq } = context.params;
+  const { seq } = context.params as any;
 
-  const { data } = await client.query({
-    query: GET_FARMLAND,
-    variables: {
-      userSeq: Number(userSeq),
-    },
-  });
+  // const { data } = await client.query({
+  //   query: GET_FARMLAND,
+  //   variables: {
+  //     seq: Number(seq),
+  //   },
+  // });
 
-  return {
-    props: {
-      farmLands: data.farmLand,
-      userSeq: userSeq,
-    },
-  };
+  // return {
+  //   props: {
+  //     farmLands: data.farmLand,
+  //     seq,
+  //   },
+  // };
+
+  return { props: {} };
 };
-const User = (props: { farmLands; userSeq }) => {
+
+const User = (props: any) => {
   const PAGETITLE = '회원정보';
   const router = useRouter();
   const asPath = router.asPath;
@@ -48,14 +50,11 @@ const User = (props: { farmLands; userSeq }) => {
     const confirmResult = confirm('회원을 정말 탈퇴하시겠습니까?');
     if (confirmResult) {
       try {
-        updateUser({
-          variables: {
-            userSeq: Number(props.userSeq),
-            user: {
-              status_withdrawal: 'Y',
-            },
-          },
-        });
+        // updateUser({
+        //   variables: {
+        //     userSeq: Number(props.seq),
+        //   },
+        // });
 
         alert('탈퇴되었습니다');
         asPathSplit.pop();
@@ -81,50 +80,50 @@ const User = (props: { farmLands; userSeq }) => {
     }
   };
 
-  const { data } = useQuery(GET_USER, {
-    variables: {
-      userSeq: Number(props.userSeq),
-    },
-  });
+  // const { data } = useQuery(GET_USER, {
+  //   variables: {
+  //     seq: Number(props.seq),
+  //   },
+  // });
 
-  const [updateUser] = useMutation(UPDATE_USER, {
-    awaitRefetchQueries: true,
-    refetchQueries: [
-      {
-        query: GET_USER,
-        variables: {
-          userSeq: Number(props.userSeq),
-        },
-      },
-    ],
-  });
+  const data = {
+    idx: 1,
+    id: 'test',
+    phone: '01000000000',
+    email: 'abc@ccc.co.kr',
+    name: 'test',
+    addr: 'test',
+    gender: '여',
+    birth: '20220901',
+  };
+
+  // const [updateUser] = useMutation(UPDATE_USER, {
+  //   awaitRefetchQueries: true,
+  //   refetchQueries: [
+  //     {
+  //       query: GET_USER,
+  //       variables: {
+  //         seq: Number(props.seq),
+  //       },
+  //     },
+  //   ],
+  // });
 
   return (
     <>
       <Breadcrumb title={PAGETITLE} />
-      <Button
-        style={{ marginLeft: 32, marginTop: 16 }}
-        className="primary"
-        onClick={() => router.push(`${asPath}/reservation`)}
-      >
-        방문예약
-      </Button>
 
       {data && (
         <UserDetail
-          isPaid={props.farmLands?.some((payment) => {
-            return payment.status_payment === 'O';
-          })}
           userDetailData={data}
-          updateUser={updateUser}
+          // updateUser={updateUser}
           isReadOnly={isReadOnly}
           setIsReadOnly={setIsReadOnly}
-          userSeq={props.userSeq}
+          seq={props.seq}
         />
       )}
-      {isReadOnly && props.farmLands && (
+      {isReadOnly && (
         <>
-          <UserFarmland farmlandData={props.farmLands} userSeq={props.userSeq} />{' '}
           <ButtonWrapper>
             <Button onClick={onClickResetPassword} status="Warning" style={{ marginRight: '1rem' }}>
               비밀번호 초기화

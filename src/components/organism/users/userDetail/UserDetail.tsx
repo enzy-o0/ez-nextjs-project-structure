@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import Select from '@paljs/ui/Select';
 import { Card } from '@paljs/ui/Card';
 import { Button } from '@paljs/ui/Button';
@@ -9,11 +9,10 @@ import { SelectOptionType } from '@src/types';
 import router from 'next/router';
 
 interface IProps {
-  isPaid: boolean;
   seq: string | string[];
   isReadOnly: boolean;
   setIsReadOnly: React.Dispatch<React.SetStateAction<boolean>>;
-  updateUser: any;
+  updateUser?: any;
   userDetailData: any;
 }
 
@@ -23,38 +22,8 @@ export const SelectOptionGender: SelectOptionType[] = [
 ];
 
 const UserDetail: React.FC<IProps> = ({ isReadOnly, setIsReadOnly, seq, updateUser, userDetailData }) => {
-  const [userDetail, setUserDetail] = useState(userDetailData.user);
-  const [noColumn, setNoColumns] = useState({
-    gender: '',
-    age: '',
-    email: '',
-    etc: '',
-  });
-
-  useEffect(() => {
-    if (userDetail.phone) {
-      if (userDetail.phone.length === 10) {
-        setUserDetail({
-          ...userDetail,
-          phone: userDetail.phone.replace(/-/g, '').replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3'),
-        });
-      }
-
-      if (userDetail.phone.length === 13) {
-        setUserDetail({
-          ...userDetail,
-          phone: userDetail.phone.replace(/-/g, '').replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3'),
-        });
-      }
-
-      if (userDetail.phone.length === 12) {
-        setUserDetail({
-          ...userDetail,
-          phone: userDetail.phone.replace(/-/g, '').replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3'),
-        });
-      }
-    }
-  }, [userDetail.phone]);
+  console.log(userDetailData);
+  const [userDetail, setUserDetail] = useState(userDetailData);
 
   // 전화번호 정규식
   const checkTel = useMemo(() => /^\d{3}-\d{3,4}-\d{4}$/.test(userDetail.phone), [userDetail.phone]);
@@ -67,19 +36,13 @@ const UserDetail: React.FC<IProps> = ({ isReadOnly, setIsReadOnly, seq, updateUs
     [userDetail],
   );
 
-  const onChangeUserDetail2 = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const { name, value } = e.target;
-      setNoColumns({ ...noColumn, [name]: value });
-    },
-    [noColumn],
-  );
-
   const validateEmailForm = () => {
-    if (noColumn && noColumn.email.length === 0) {
+    if (userDetail.email.length === 0) {
       return true;
     } else {
-      return /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i.test(noColumn.email);
+      return /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i.test(
+        userDetail.email,
+      );
     }
   };
 
@@ -113,8 +76,8 @@ const UserDetail: React.FC<IProps> = ({ isReadOnly, setIsReadOnly, seq, updateUs
           },
         });
 
-        alert('회원정보가 수정되었습니다.');
-        router.reload(router.asPath);
+        alert('회원정보가 수정되었습니다');
+        router.reload();
       } catch (error) {
         alert(`문제가 발생했습니다. ${error}`);
       }
@@ -125,7 +88,7 @@ const UserDetail: React.FC<IProps> = ({ isReadOnly, setIsReadOnly, seq, updateUs
   };
 
   return (
-    <Card style={{ padding: '16px', margin: 16 }}>
+    <Card style={{ padding: 16, margin: 16 }}>
       <UserInfoWrapper>
         <div className="UserInfoWrapper" style={{ justifyContent: 'space-between' }}>
           <h3 className="main-title">회원정보</h3>
@@ -150,7 +113,7 @@ const UserDetail: React.FC<IProps> = ({ isReadOnly, setIsReadOnly, seq, updateUs
                   className="danger"
                   status="Danger"
                   onClick={() => {
-                    setUserDetail(data.user);
+                    // setUserDetail(data.user);
                     setIsReadOnly(true);
                   }}
                 >
@@ -199,26 +162,11 @@ const UserDetail: React.FC<IProps> = ({ isReadOnly, setIsReadOnly, seq, updateUs
           isValid={checkTel}
         />
         <LabelInput
-          style={{ width: '100%' }}
-          placeholder="주소"
-          value={userDetail.addr}
-          // value={addressResult}
-          label="주소"
-          labelFor="addr"
-          onChange={onChangeUserDetail}
-          name="addr"
-          isReadOnly={isReadOnly}
-          isRequired={true}
-          errorMessage="주소를 입력하세요."
-          isValid={!!userDetail.addr}
-          // isValid={!!addressResult}
-        />
-        <LabelInput
           placeholder="이메일"
-          value={noColumn.email}
+          value={userDetail.email}
           label="이메일"
           labelFor="email"
-          onChange={onChangeUserDetail2}
+          onChange={onChangeUserDetail}
           name="email"
           isReadOnly={isReadOnly}
           isValid={validateEmailForm()}
@@ -226,14 +174,6 @@ const UserDetail: React.FC<IProps> = ({ isReadOnly, setIsReadOnly, seq, updateUs
           errorMessage="올바른 이메일 주소를 입력해주세요."
         />
         <Hr />
-        <div>
-          <Userdate>
-            {userDetailData &&
-              `가입날짜: ${userDetailData.user.create_date} | 수정날짜: ${
-                userDetailData.user.update_date === null ? '-' : userDetailData.user.update_date
-              }`}
-          </Userdate>
-        </div>
       </UserInfoWrapper>
     </Card>
   );
@@ -278,11 +218,6 @@ const Hr = styled.div`
   height: 1px;
   background: gray;
   margin: 50px 0;
-`;
-
-const Userdate = styled.p`
-  color: gray;
-  font-size: 14px;
 `;
 
 const SelectStyled = styled(Select)`

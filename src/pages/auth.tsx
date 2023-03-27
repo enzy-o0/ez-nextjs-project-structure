@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { useSession, signIn, signOut } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 
 export const Auth = ({ children, role }) => {
   const { data: session, status } = useSession();
@@ -11,9 +11,10 @@ export const Auth = ({ children, role }) => {
   useEffect(() => {
     if (!loading && !hasUser) {
       router.push('/login');
-    } else if (!hasAccess(session, role)) {
-      router.push('/permission-denied');
     }
+    // else if (!hasAccess(session, role)) {
+    //   router.push('/permission-denied');
+    // }
   }, [loading, hasUser]);
 
   if (loading || !hasUser) {

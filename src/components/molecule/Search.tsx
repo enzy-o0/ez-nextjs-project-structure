@@ -8,10 +8,10 @@ interface SearchProps {
   selectOptionSearch?: SelectOptionType[];
   searchKeyword?: String;
   setSearchKeyword: (a: string) => void;
-  searchType?: String;
-  setSearchType: (a: string) => void;
+  searchType?: string;
+  setSearchType: React.Dispatch<React.SetStateAction<string>>;
   onClick?: () => void;
-  onKeyPress: () => void;
+  onKeyPress: any;
 }
 
 const Search = ({
@@ -25,10 +25,10 @@ const Search = ({
 }: SearchProps) => {
   return (
     <SearchWrapper>
-      {selectOptionSearch && (
+      {selectOptionSearch && searchType && (
         <SelectStyled
           options={selectOptionSearch}
-          defaultValue={selectOptionSearch[searchType]}
+          defaultValue={selectOptionSearch[Number(searchType)]}
           placeholder="Select"
           onChange={({ value }: { value: string }) => {
             setSearchType(value);
@@ -38,7 +38,7 @@ const Search = ({
       <SearchForm>
         <SearchStyled
           onKeyPress={onKeyPress}
-          value={searchKeyword}
+          value={String(searchKeyword)}
           onChange={({ target: { value } }) => {
             setSearchKeyword(value);
           }}
