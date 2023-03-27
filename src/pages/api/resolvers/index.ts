@@ -41,8 +41,8 @@ export const resolvers = {
     users: (_: any, { seq }: any) => getSelectUsers(seq),
   },
   Mutation: {
-    updateUser: async (_: any, { seq, user }: updateUserProps) => {
-      return setUpdateUser(seq, user);
-    },
+    // updateUser: async (_: any, { seq, user }: updateUserProps) => {
+    //   return setUpdateUser(seq, user);
+    // },
   },
 };

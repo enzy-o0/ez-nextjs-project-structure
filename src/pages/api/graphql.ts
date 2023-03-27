@@ -41,7 +41,7 @@ function prepareConnection() {
   return connectionReadyPromise;
 }
 
-export default async function handler(req, res) {
+export default async function handler(req: any, res: any) {
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   res.setHeader('Access-Control-Allow-Origin', 'https://studio.apollographql.com');

@@ -19,7 +19,7 @@ export class User extends BaseEntity {
   id: string;
 
   @Column('varchar', {
-    name: 'pswd',
+    name: 'password',
     comment: '비밀번호',
     length: 200,
   })
@@ -38,10 +38,6 @@ export class User extends BaseEntity {
   @Field(() => String)
   birth: string;
 
-  @Column('varchar', { name: 'addr', comment: '주소', length: 255 })
-  @Field(() => String)
-  addr1: string;
-
   @Field(() => String, { nullable: true })
   @Column('varchar', {
     name: 'email',
@@ -59,12 +55,3 @@ export class User extends BaseEntity {
     length: 1,
   })
   gender: string | null;
-
-  @Field(() => String)
-  @Column('datetime', { name: 'createDate', comment: '최초 생성일' })
-  createDate: Date;
-
-  @Field(() => String)
-  @Column('datetime', { name: 'updateDate', comment: '최종 수정일' })
-  updateDate: Date;
-}

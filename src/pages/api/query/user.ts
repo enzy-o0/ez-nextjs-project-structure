@@ -12,8 +12,6 @@ export const GET_USERS = gql`
       addr
       email
       gender
-      createDate
-      updateDate
     }
   }
 `;
@@ -26,8 +24,6 @@ export const GET_USER = gql`
       addr
       gender
       age
-      create_date
-      update_date
     }
   }
 `;

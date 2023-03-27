@@ -31,5 +31,5 @@ export const typeDefs = gql`
 
   type Mutation {
     updateUser(seq: Int!, user: UserType): User
-  }s
+  }
 `;
