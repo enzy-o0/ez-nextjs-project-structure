@@ -55,3 +55,4 @@ export class User extends BaseEntity {
     length: 1,
   })
   gender: string | null;
+}
